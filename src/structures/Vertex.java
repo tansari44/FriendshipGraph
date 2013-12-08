@@ -5,7 +5,7 @@ import java.util.LinkedList;
 public class Vertex {
 	public String name;
 	public String school;
-	public LinkedList<Integer> neighbors;
+	public LinkedList<Integer> nbrs;
 
 	public boolean visited = false;
 	public int num;
@@ -20,7 +20,7 @@ public class Vertex {
 	public Vertex(String name, String school) {
 		this.name = name;
 		this.school = school;
-		neighbors = new LinkedList<Integer>();
+		nbrs = new LinkedList<Integer>();
 	}
 	
 }

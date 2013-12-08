@@ -10,7 +10,7 @@ public class Graph {
 	HashMap<String,Integer> nameHash = new HashMap<String,Integer>();
 
 	public int addVertex(Vertex vert) {
-		if(!containsV(vert)) { 
+		if(!contVert(vert)){ 
 			adjacencyLists.add(vert);
 			nameHash.put(vert.name, adjacencyLists.size()-1);
 			if(!vert.school.equals("")) {
@@ -45,7 +45,7 @@ public class Graph {
 			if(curr == finish) {
 				break;
 			} else {
-				for(int nbr : adjacencyLists.get(curr).neighbors) {
+				for(int nbr : adjacencyLists.get(curr).nbrs) {
 					if(!visited[nbr]) {
 						q.add(nbr);
 						visited[nbr] = true;
@@ -96,7 +96,7 @@ public class Graph {
 		v.backwards = num;
 		v.visited = true;
 
-		for(int wnum : v.neighbors) {
+		for(int wnum : v.nbrs) {
 			Vertex w = adjacencyLists.get(wnum);
 			if(!w.visited) {
 				depthFirstSearch(w);
@@ -111,7 +111,7 @@ public class Graph {
 	public String connectors() {
 		for(int i = 0; i < adjacencyLists.size(); i++) {
 			Vertex v = adjacencyLists.get(i);
-			if(!v.visited && v.neighbors.size() == 1) {
+			if(!v.visited && v.nbrs.size() == 1) {
 				num = 0;
 				start = i;
 				depthFirstSearch(v);
@@ -130,53 +130,52 @@ public class Graph {
 	}	
 	public class shPath {
 		
-		int numverts;
-		int sourceNum;
-		int destNum;
-		LinkedList<Neighbor> fringe;
-		int[] Distance;
-		int[] Previous;
-		boolean[] Done;
+		int num;
+		int src;
+		int dest;
+		LinkedList<Neighbor> edge;
+		int[] dist;
+		int[] prev;
+		boolean[] done;
 		Graph G;
 		
-		public shPath(Graph G, String name1, String name2) {
+		public shPath(Graph G, String introName, String endName) {
 			this.G = G;
-			numverts = G.numberOfVertices();
+			num = G.numVert();
 			
-			this.sourceNum = G.indexOfName(name1);
-			this.destNum = G.indexOfName(name2);
+			this.src = G.indexOfName(introName);
+			this.dest = G.indexOfName(endName);
 			
-			fringe = new LinkedList<Neighbor>();
-			Distance = new int[numverts];
-			Previous = new int[numverts];
-			Done = new boolean[numverts];
+			edge = new LinkedList<Neighbor>();
+			dist = new int[num];
+			prev = new int[num];
+			done = new boolean[num];
 			
 
-			for(int i=0; i < numverts; i++) {
-				Done[i] = false;
-				Distance[i] = Integer.MAX_VALUE;
-				Previous[i] = i;
+			for(int i=0; i < num; i++) {
+				done[i] = false;
+				dist[i] = Integer.MAX_VALUE;
+				prev[i] = i;
 			}
-			fringe.clear();
-			
-
-			Done[sourceNum] = true;
-			Distance[sourceNum] = 0;
-			
-			Neighbor nbr = G.firstNeighbor(sourceNum);
-			while(nbr != null) {
-				int w = nbr.vnum;
-				Distance[w] = 1;
-				Previous[w] = sourceNum;
-				fringe.add(nbr);
-				nbr = nbr.next;
+			edge.clear();
+			done[src] = true;
+			dist[src] = 0;
+			Neighbor neighbor = G.firstNeighbor(src);
+			while(neighbor != null) {
+				int w = neighbor.vnum;
+				dist[w] = 1;
+				prev[w] = src;
+				edge.add(neighbor);
+				neighbor = neighbor.next;
 			}
 		}
 		
-		public void runSome(int howManySteps) {
-			int step = 0;
-			while(step < howManySteps) {
-				if(fringe.isEmpty()) break;
+		public void run(int progression) {
+			int cont = 0;
+			while(cont < progression) {
+				if(edge.isEmpty()) {
+					break;
+				}
 
 			}
 		}
@@ -197,7 +196,7 @@ public class Graph {
 			}
 		}
 		for(int v = 0; v < adjacencyLists.size(); v++) {
-			for(int nbr : adjacencyLists.get(v).neighbors) {
+			for(int nbr : adjacencyLists.get(v).nbrs) {
 				if(!appended[v][nbr]) {
 					sb.append(nameOfIndex(v) +"|"+nameOfIndex(nbr) + "\n");
 					appended[v][nbr] = true; appended[nbr][v] = true;
@@ -206,6 +205,7 @@ public class Graph {
 		}
 		return sb.toString();
 	}
+	
 	// a whole slew of methods
 	public Graph(){ 
 		
@@ -217,32 +217,32 @@ public class Graph {
 		adjacencyLists = new ArrayList<Vertex>(vertexCap); 
 		
 		}
-	public int numberOfVertices() { 
+	public int numVert() { 
 		
 		return adjacencyLists.size(); 
 		
 		}
 	
-	public boolean containsV(Vertex v){ 
+	public boolean contVert(Vertex v){ 
 		
 		return adjacencyLists.indexOf(v) != -1; 
 		
 		}
-	public int vertexNumberOf(Vertex v){ 
+	public int positVert(Vertex v){ 
 		
 		return adjacencyLists.indexOf(v); 
 		
 		}
-	public boolean containsEdge(int vnum, int nbr){ 
+	public boolean contEdge(int vnum, int nbr){ 
 		
-		return adjacencyLists.get(vnum).neighbors.contains(nbr); 
+		return adjacencyLists.get(vnum).nbrs.contains(nbr); 
 		
 		}
-	public void addEdge(int vnum, int nbr) {
+	public void addEdge(int vnum, int neighbor) {
 		Vertex v = adjacencyLists.get(vnum);
-		if(!v.neighbors.contains(nbr)) {
-			v.neighbors.add(nbr);
-			adjacencyLists.get(nbr).neighbors.add(vnum);
+		if(!v.nbrs.contains(neighbor)) {
+			v.nbrs.add(neighbor);
+			adjacencyLists.get(neighbor).nbrs.add(vnum);
 		}
 	}
 	
