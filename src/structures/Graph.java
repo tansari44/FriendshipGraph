@@ -68,14 +68,43 @@ public class Graph {
 	}
 	
 	public Graph subgraph(String school) {
-	    //still needs to be completed
-		return null;
-	}
-	
-	public void printSchools() {
-		for(Map.Entry entry : studentsInSchool.entrySet()) {
-			System.out.println(entry.getKey() + " = " + entry.getValue());
+		if(!studentsInSchool.containsKey(school)){
+			return null;
 		}
+		LinkedList<Integer> schoolList = studentsInSchool.get(school);
+		Graph subgraph = new Graph(schoolList.size());
+		
+		for(int v : schoolList) {	
+			subgraph.addVertex(new Vertex(nameOfIndex(v),school));
+		}
+		
+		Queue<Integer> q = new LinkedList<Integer>();
+		boolean[] visited = new boolean[adjacencyLists.size()];
+		Arrays.fill(visited, false);
+		
+		q.add(schoolList.get(0));
+		visited[schoolList.get(0)] = true;
+		
+		while(!q.isEmpty()) {
+			int curr = (int)q.remove();
+			
+			for(int nbr : adjacencyLists.get(curr).nbrs) {
+				if(!visited[nbr] && adjacencyLists.get(nbr).school.equals(school)) {
+					q.add(nbr);
+					visited[nbr] = true;
+					String c = nameOfIndex(curr);
+					String n = nameOfIndex(nbr);
+					subgraph.addEdge(subgraph.indexOfName(c),subgraph.indexOfName(n));
+				} 
+			}
+			
+			visited[curr] = true;
+			
+			if(q.isEmpty()) {
+				for(int name : schoolList) { if(!visited[name]) { q.add(name); } }
+			}
+		}
+		return subgraph;
 	}
 	
 	public ArrayList<Graph> cliques() {
@@ -256,6 +285,11 @@ public class Graph {
 		return adjacencyLists.get(vnum).name; 
 		
 		}
+	public void printSchools() {
+		for(Map.Entry entry : studentsInSchool.entrySet()) {
+			System.out.println(entry.getKey() + " = " + entry.getValue());
+		}
+	}
 	
 
 }
